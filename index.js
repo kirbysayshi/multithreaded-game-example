@@ -22,17 +22,32 @@ var knownBoids = {};
 worker.addEventListener('message', function(ev) {
 
   if (ev.data.type === 'new boid') {
-    knownBoids[ev.data.id] = boidStruct(ev.data.id);
+    initializeBoidStruct(ev.data.id, ev.data.update);
+
+    // This is for initial debugging purposes.
+    drawBoid(knownBoids[ev.data.id], 1);
     return;
   }
 
-  if (ev.data.type === 'boid update') {
-    updateBoidStruct(ev.data);
+  if (ev.data.type === 'boid updates') {
+    for (var i = 0; i < ev.data.updates.length; i++) {
+      updateBoidStruct(ev.data.updates[i]);
+    }
     return;
   }
 
 });
 
+function initializeBoidStruct(id, data) {
+  // Mark this boid as "known"
+  knownBoids[id] = boidStruct(id);
+  // Do the same as if we're just updating the boid on a tick.
+  var boidData = updateBoidStruct(data);
+  // Manually set the previous position to current to avoid interpolating
+  // between 0 and current.
+  boidData.px = boidData.cx;
+  boidData.py = boidData.cy;
+}
 
 function boidStruct(id) {
   return {
@@ -52,6 +67,7 @@ function updateBoidStruct(data) {
   boidData.cx = data.x;
   boidData.cy = data.y;
   boidData.radius = data.radius;
+  return boidData;
 }
 
 function drawBoid(boid, ratio) {
