@@ -13,7 +13,17 @@ function resize(e) {
 window.addEventListener('resize', resize, false);
 resize();
 
+var renderStats = new Stats();
+renderStats.domElement.style.position = 'absolute';
+renderStats.domElement.style.right = '0px';
+renderStats.domElement.style.top = '0px';
+document.body.appendChild( renderStats.domElement );
 
+var physStats = new Stats();
+physStats.domElement.style.position = 'absolute';
+physStats.domElement.style.right = '0px';
+physStats.domElement.style.top = '100px';
+document.body.appendChild( physStats.domElement );
 
 var worker = work(require('./lib/worker'));
 
@@ -33,6 +43,7 @@ worker.addEventListener('message', function(ev) {
     for (var i = 0; i < ev.data.updates.length; i++) {
       updateBoidStruct(ev.data.updates[i]);
     }
+    physStats.end();
     return;
   }
 
@@ -81,6 +92,7 @@ function drawBoid(boid, ratio) {
 }
 
 function graphics(dt, ratio) {
+  renderStats.begin();
   var boidIds = Object.keys(knownBoids)
     , boid
     , i;
@@ -91,9 +103,11 @@ function graphics(dt, ratio) {
     boid = knownBoids[boidIds[i]];
     drawBoid(boid, ratio);
   }
+  renderStats.end();
 }
 
 function logics(dt) {
+  physStats.begin();
   worker.postMessage({ type: 'logics', dt: dt });
 }
 
