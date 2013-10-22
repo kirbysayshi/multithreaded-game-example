@@ -2,6 +2,8 @@
 var work = require('webworkify')
   , SSI = require('./lib/ssi')
 
+var statshelper = require('./lib/statshelper');
+
 var cvs = document.querySelector('#stage')
   , ctx = cvs.getContext('2d');
 
@@ -13,17 +15,9 @@ function resize(e) {
 window.addEventListener('resize', resize, false);
 resize();
 
-var renderStats = new Stats();
-renderStats.domElement.style.position = 'absolute';
-renderStats.domElement.style.right = '0px';
-renderStats.domElement.style.top = '0px';
-document.body.appendChild( renderStats.domElement );
+var renderStats = statshelper();
+var physStats = statshelper();
 
-var physStats = new Stats();
-physStats.domElement.style.position = 'absolute';
-physStats.domElement.style.right = '0px';
-physStats.domElement.style.top = '100px';
-document.body.appendChild( physStats.domElement );
 
 var worker = work(require('./lib/worker'));
 

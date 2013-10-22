@@ -2,7 +2,7 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-var Stats = function () {
+var Stats = module.exports = function () {
 
   var startTime = Date.now(), prevTime = startTime;
   var ms = 0, msMin = Infinity, msMax = 0;
