@@ -7,13 +7,7 @@ var statshelper = require('./lib/statshelper');
 var cvs = document.querySelector('#stage')
   , ctx = cvs.getContext('2d');
 
-function resize(e) {
-  cvs.width = document.body.clientWidth;
-  cvs.height = document.body.clientHeight;
-}
-
-window.addEventListener('resize', resize, false);
-resize();
+var resizemon = require('./lib/resizemon')(cvs);
 
 var renderStats = statshelper();
 var physStats = statshelper();
