@@ -2,7 +2,7 @@
 var work = require('webworkify');
 
 var cvs = document.querySelector('#stage')
-  , ctx = cvs.getContext('2d');
+  , ctx = cvs.getContext('2d')
   , resizemon = require('./lib/resizemon')(cvs);
 
 var statshelper = require('./lib/statshelper')
