@@ -5,10 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bundle-multi": "node_modules/browserify/bin/cmd.js multi.js > bundle.js",
-    "bundle-multi-debug": "node_modules/browserify/bin/cmd.js multi.js --debug > bundle.js",
-    "bundle-single": "node_modules/browserify/bin/cmd.js single.js > bundle.js",
-    "bundle-single-debug": "node_modules/browserify/bin/cmd.js single.js --debug > bundle.js"
+    "bundle": "browserify multi.js > bundle-multi.js && browserify single.js > bundle-single.js",
+    "bundle-debug": "browserify multi.js --debug > bundle-multi.js && browserify single.js --debug > bundle-single.js"
   },
   "author": "Andrew Petersen <kirbysayshi@gmail.com>",
   "license": "MIT",
