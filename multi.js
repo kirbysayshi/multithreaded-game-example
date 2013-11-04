@@ -1,5 +1,8 @@
 
-var work = require('webworkify');
+console.log('running in MULTI THREADED MODE');
+
+var work = require('webworkify')
+  , scihalt = require('science-halt');
 
 var cvs = document.querySelector('#stage')
   , ctx = cvs.getContext('2d')
@@ -55,9 +58,4 @@ var last = Date.now()
   last = now;
 }());
 
-document.addEventListener('keydown', function(e) {
-  if (e.which == 27) {
-    running = false;
-    console.log('HALT IN THE NAME OF SCIENCE!');
-  }
-})
+scihalt(function() { running = false; })

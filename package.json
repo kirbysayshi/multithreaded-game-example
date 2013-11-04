@@ -5,13 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bundle": "node_modules/browserify/bin/cmd.js index.js > bundle.js",
-    "bundle-debug": "node_modules/browserify/bin/cmd.js index.js --debug > bundle.js"
+    "bundle-multi": "node_modules/browserify/bin/cmd.js multi.js > bundle.js",
+    "bundle-multi-debug": "node_modules/browserify/bin/cmd.js multi.js --debug > bundle.js",
+    "bundle-single": "node_modules/browserify/bin/cmd.js single.js > bundle.js",
+    "bundle-single-debug": "node_modules/browserify/bin/cmd.js single.js --debug > bundle.js"
   },
   "author": "Andrew Petersen <kirbysayshi@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "browserify": "~2.34.0",
-    "webworkify": "~0.1.0"
+    "webworkify": "~0.1.0",
+    "science-halt": "~0.2.0",
+    "setimmediate": "~1.0.1"
   }
 }
