@@ -13,7 +13,6 @@
   "dependencies": {
     "browserify": "~2.34.0",
     "webworkify": "~0.1.0",
-    "science-halt": "~0.2.0",
-    "setimmediate": "~1.0.1"
+    "science-halt": "~0.2.0"
   }
 }
