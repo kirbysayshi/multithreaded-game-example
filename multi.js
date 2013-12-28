@@ -46,7 +46,7 @@ function logics(dt) {
   worker.postMessage({ type: 'logics', dt: dt });
 }
 
-var ssi = new SSI(1000 / 30, logics, graphics);
+var ssi = new SSI(1000 / 2, logics, graphics);
 
 var last = Date.now()
   , running = true;

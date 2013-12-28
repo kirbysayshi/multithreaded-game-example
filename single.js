@@ -31,13 +31,18 @@ window.addEventListener('message', function(ev) {
     return;
   }
 
+  if (ev.data.type === 'graphics') {
+    ctx.clearRect(0, 0, cvs.width, cvs.height);
+    BoidData.drawAll(ctx, ev.data.ratio);
+    renderStats.end();
+    return;
+  }
+
 });
 
 function graphics(dt, ratio) {
   renderStats.begin();
-  ctx.clearRect(0, 0, cvs.width, cvs.height);
-  BoidData.drawAll(ctx, ratio);
-  renderStats.end();
+  window.postMessage({ type: 'graphics', dt: dt, ratio: ratio }, '*');
 }
 
 function logics(dt) {
@@ -45,7 +50,7 @@ function logics(dt) {
   window.postMessage({ type: 'logics', dt: dt }, '*');
 }
 
-var ssi = new SSI(1000 / 30, logics, graphics);
+var ssi = new SSI(1000 / 2, logics, graphics);
 
 var last = Date.now()
   , running = true;
