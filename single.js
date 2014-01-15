@@ -38,7 +38,7 @@ window.addEventListener('message', function(ev) {
     return;
   }
 
-});
+}, false);
 
 function graphics(dt, ratio) {
   rstats('frame').start();
