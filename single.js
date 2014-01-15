@@ -8,33 +8,38 @@ var cvs = document.querySelector('#stage')
   , resizemon = require('./lib/resizemon')(cvs);
 
 var statshelper = require('./lib/statshelper')
-  , renderStats = statshelper()
-  , physStats = statshelper();
+  , renderStats = statshelper('RENDER')
+  , physStats = statshelper('PHYS');
 
-var BoidData = require('./lib/boiddata')
-  , SSI = require('./lib/ssi');
+var repeater = require('./lib/repeater');
 
 var worker = require('./lib/worker')();
 
+var BoidManager = require('./lib/boidmanager');
+var boidman = new BoidManager;
+var interpolationRatio = null;
+
 window.addEventListener('message', function(ev) {
 
-  if (ev.data.type === 'new boid') {
-    new BoidData(ev.data.update);
-    return;
-  }
+  console.log('msg', ev.data.type, ev.data);
 
-  if (ev.data.type === 'boid updates') {
-    for (var i = 0; i < ev.data.updates.length; i++) {
-      BoidData.update(ev.data.updates[i])
+  if (ev.data.type === 'step') {
+    for (var i = 0; i < ev.data.snapshots.length; i++) {
+      var snapshot = ev.data.snapshots[i];
+      var boid = boidman.getinate(snapshot.id);
+      boid.readFromSnapshot(snapshot);
     }
-    physStats.end();
+
+    //console.log('step', ev.data);
+    physStats.begin(ev.data.startTime);
+    physStats.end(ev.data.endTime);
     return;
   }
 
-  if (ev.data.type === 'graphics') {
-    ctx.clearRect(0, 0, cvs.width, cvs.height);
-    BoidData.drawAll(ctx, ev.data.ratio);
-    renderStats.end();
+  // A tick implies that the worker checked to see if it was time
+  // for an update.
+  if (ev.data.type === 'tick') {
+    interpolationRatio = ev.data.interpolationRatio;
     return;
   }
 
@@ -42,24 +47,19 @@ window.addEventListener('message', function(ev) {
 
 function graphics(dt, ratio) {
   renderStats.begin();
-  window.postMessage({ type: 'graphics', dt: dt, ratio: ratio }, '*');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+  var boids = boidman.all();
+  for (var i = 0; i < boids.length; i++) {
+    boids[i].draw(ctx, interpolationRatio);
+  }
+  renderStats.end();
 }
 
-function logics(dt) {
-  physStats.begin();
-  window.postMessage({ type: 'logics', dt: dt }, '*');
-}
+// Call `graphics` as often as possible using `requestAnimationFrame`.
+var repeaterCtl = repeater(graphics, requestAnimationFrame);
+repeaterCtl.start();
 
-var ssi = new SSI(1000 / 2, logics, graphics);
-
-var last = Date.now()
-  , running = true;
-
-(function anim() {
-  if (running) requestAnimationFrame(anim);
-  var now = Date.now();
-  ssi.update(now - last);
-  last = now;
-}());
-
-scihalt(function() { running = false; })
+scihalt(function() {
+  repeaterCtl.stop();
+  window.postMessage({ type: 'HALT' }, '*');
+})
