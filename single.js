@@ -7,9 +7,7 @@ var cvs = document.querySelector('#stage')
   , ctx = cvs.getContext('2d')
   , resizemon = require('./lib/resizemon')(cvs);
 
-var statshelper = require('./lib/statshelper')
-  , renderStats = statshelper('RENDER')
-  , physStats = statshelper('PHYS');
+var rstats = require('./lib/rstatshelper');
 
 var repeater = require('./lib/repeater');
 
@@ -21,8 +19,6 @@ var interpolationRatio = null;
 
 window.addEventListener('message', function(ev) {
 
-  console.log('msg', ev.data.type, ev.data);
-
   if (ev.data.type === 'step') {
     for (var i = 0; i < ev.data.snapshots.length; i++) {
       var snapshot = ev.data.snapshots[i];
@@ -30,9 +26,8 @@ window.addEventListener('message', function(ev) {
       boid.readFromSnapshot(snapshot);
     }
 
-    //console.log('step', ev.data);
-    physStats.begin(ev.data.startTime);
-    physStats.end(ev.data.endTime);
+    rstats('phys').set(ev.data.endTime - ev.data.startTime);
+    rstats().update();
     return;
   }
 
@@ -46,13 +41,16 @@ window.addEventListener('message', function(ev) {
 });
 
 function graphics(dt, ratio) {
-  renderStats.begin();
+  rstats('frame').start();
+  rstats('FPS').frame();
+  rstats('rAF').tick();
   ctx.clearRect(0, 0, cvs.width, cvs.height);
   var boids = boidman.all();
   for (var i = 0; i < boids.length; i++) {
     boids[i].draw(ctx, interpolationRatio);
   }
-  renderStats.end();
+  rstats('frame').end();
+  rstats().update();
 }
 
 // Call `graphics` as often as possible using `requestAnimationFrame`.
