@@ -11,7 +11,7 @@
   "author": "Andrew Petersen <kirbysayshi@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "browserify": "~3.18.0",
+    "browserify": "~3.20.0",
     "webworkify": "~0.1.0",
     "science-halt": "~0.2.0"
   }
