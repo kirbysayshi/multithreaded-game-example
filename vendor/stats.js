@@ -95,15 +95,15 @@ var Stats = module.exports = function () {
 
     setMode: setMode,
 
-    begin: function () {
+    begin: function (opt_now) {
 
-      startTime = Date.now();
+      startTime = opt_now || Date.now();
 
     },
 
-    end: function () {
+    end: function (opt_now) {
 
-      var time = Date.now();
+      var time = opt_now || Date.now();
 
       ms = time - startTime;
       msMin = Math.min( msMin, ms );
