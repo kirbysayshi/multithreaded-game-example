@@ -8,54 +8,57 @@ var cvs = document.querySelector('#stage')
   , ctx = cvs.getContext('2d')
   , resizemon = require('./lib/resizemon')(cvs);
 
-var statshelper = require('./lib/statshelper')
-  , renderStats = statshelper()
-  , physStats = statshelper();
+var rstats = require('./lib/rstatshelper');
 
-var BoidData = require('./lib/boiddata')
-  , SSI = require('./lib/ssi');
+var repeater = require('./lib/repeater');
 
 var worker = work(require('./lib/worker'));
 
+var BoidManager = require('./lib/boidmanager');
+var boidman = new BoidManager;
+var interpolationRatio = null;
+
 worker.addEventListener('message', function(ev) {
 
-  if (ev.data.type === 'new boid') {
-    new BoidData(ev.data.update);
+  // A full step contains snapshots.
+  if (ev.data.type === 'step') {
+    for (var i = 0; i < ev.data.snapshots.length; i++) {
+      var snapshot = ev.data.snapshots[i];
+      var boid = boidman.getinate(snapshot.id);
+      boid.readFromSnapshot(snapshot);
+    }
+
+    rstats('phys').set(ev.data.endTime - ev.data.startTime);
+    rstats().update();
     return;
   }
 
-  if (ev.data.type === 'boid updates') {
-    for (var i = 0; i < ev.data.updates.length; i++) {
-      BoidData.update(ev.data.updates[i])
-    }
-    physStats.end();
+  // A tick implies that the worker checked to see if it was time
+  // for an update.
+  if (ev.data.type === 'tick') {
+    interpolationRatio = ev.data.interpolationRatio;
     return;
   }
 
 });
 
-function graphics(dt, ratio) {
-  renderStats.begin();
+function graphics(dt) {
+  rstats('frame').start();
+  rstats('FPS').frame();
+  rstats('rAF').tick();
   ctx.clearRect(0, 0, cvs.width, cvs.height);
-  BoidData.drawAll(ctx, ratio);
-  renderStats.end();
+  boidman.forEach(function(boid) {
+    boid.draw(ctx, interpolationRatio);
+  });
+  rstats('frame').end();
+  rstats().update();
 }
 
-function logics(dt) {
-  physStats.begin();
-  worker.postMessage({ type: 'logics', dt: dt });
-}
+// Call `graphics` as often as possible using `requestAnimationFrame`.
+var repeaterCtl = repeater(graphics, requestAnimationFrame);
+repeaterCtl.start();
 
-var ssi = new SSI(1000 / 2, logics, graphics);
-
-var last = Date.now()
-  , running = true;
-
-(function anim() {
-  if (running) requestAnimationFrame(anim);
-  var now = Date.now();
-  ssi.update(now - last);
-  last = now;
-}());
-
-scihalt(function() { running = false; })
+scihalt(function() {
+  repeaterCtl.stop();
+  worker.postMessage({ type: 'HALT' });
+})
