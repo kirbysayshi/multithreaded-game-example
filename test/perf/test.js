@@ -19,6 +19,19 @@ function forTheWorker() {
     return msg;
   }
 
+  function makeNonFlatUpdate() {
+    var msg = {
+      type: 'boid update',
+      id: ++id,
+      pos: {
+        x: Math.random(),
+        y: Math.random(),
+      },
+      radius: 8
+    };
+    return msg;
+  }
+
   function makeStringUpdate() {
     var msg = 'type:boid update'
       + ',id:' + (++id)
@@ -36,6 +49,14 @@ function forTheWorker() {
         msgs.push(makeUpdate());
       }
       postMessage({ type: 'boid updates', updates: msgs });
+    }
+
+    if (mode === 'batched non-flat') {
+      msgs = [];
+      for(i = 0; i < max; i++) {
+        msgs.push(makeNonFlatUpdate());
+      }
+      postMessage({ type: 'non-flat boid updates', updates: msgs });
     }
 
     if (mode === 'batched string') {
@@ -118,6 +139,8 @@ w.onmessage = function(ev) {
     //console.log('parsed', parsed);
     return;
   }
+
+  console.log('data', ev.data);
 }
 
 function parseString(str) {
