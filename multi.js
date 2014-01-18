@@ -47,9 +47,10 @@ function graphics(dt) {
   rstats('FPS').frame();
   rstats('rAF').tick();
   ctx.clearRect(0, 0, cvs.width, cvs.height);
-  boidman.forEach(function(boid) {
-    boid.draw(ctx, interpolationRatio);
-  });
+  var boids = boidman.all();
+  for (var i = 0; i < boids.length; i++) {
+    boids[i].draw(ctx, interpolationRatio);
+  }
   rstats('frame').end();
   rstats().update();
 }
