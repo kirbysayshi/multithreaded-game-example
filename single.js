@@ -19,6 +19,7 @@ var lastSnapshotReceivedAt = performance.now();
 
 window.addEventListener('message', function(ev) {
 
+  // A full step contains snapshots.
   if (ev.data.type === 'step') {
     for (var i = 0; i < ev.data.snapshots.length; i++) {
       var snapshot = ev.data.snapshots[i];
@@ -36,7 +37,7 @@ window.addEventListener('message', function(ev) {
 
 }, false);
 
-function graphics(dt, ratio) {
+function graphics(dt) {
   var now = performance.now();
   rstats('frame').start();
   rstats('FPS').frame();
