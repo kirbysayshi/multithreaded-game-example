@@ -46,7 +46,7 @@ function graphics(dt) {
   rstats('FPS').frame();
   rstats('rAF').tick();
   ctx.clearRect(0, 0, cvs.width, cvs.height);
-  var ratio = (now - lastSnapshotReceivedAt) / config.PHYSICS_HZ;
+  var ratio = (now - lastSnapshotReceivedAt) / 1000 / config.PHYSICS_HZ;
   var boids = boidman.all();
   for (var i = 0; i < boids.length; i++) {
     boids[i].draw(ctx, ratio);
