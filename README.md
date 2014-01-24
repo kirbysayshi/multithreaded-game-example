@@ -64,25 +64,26 @@ A Very Simple Entity System
 
 Otherwise known as a factory or record system. The idea is that given a string id, an entity should either be returned, or constructed and returned. It maintains an internal map of constructed entities. In this experiment, the system is also responsible for [creating the ids](lib/boidmanager.js) itself.
 
-    // Instead of:
-    var boid = new Boid(x, y, radius);
-    
-    // Do this once...
-    var boidman = new BoidManager;
-    
-    // And then make a new boid:
-    var x = 10;
-    var y = 10;
-    var radius = 2;
-    var boid = boidman.getinate(null, [x, y, radius]);
-    console.log(boid.id);
-    // => "boid_1"
-    
-    // And then somewhere else in your code...
-    var boid = boidman.getinate("boid_1");
-    console.log(boid.x);
-    // => 10
+```js
+// Instead of:
+var boid = new Boid(x, y, radius);
 
+// Do this once...
+var boidman = new BoidManager;
+
+// And then make a new boid:
+var x = 10;
+var y = 10;
+var radius = 2;
+var boid = boidman.getinate(null, [x, y, radius]);
+console.log(boid.id);
+// => "boid_1"
+
+// And then somewhere else in your code...
+var boid = boidman.getinate("boid_1");
+console.log(boid.x);
+// => 10
+```
 
 A Standard Protocol for Communication (Snapshots)
 -------------------------------------------------
