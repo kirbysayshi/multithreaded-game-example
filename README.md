@@ -174,12 +174,12 @@ Prior Architecture Attempts
 
 I have gone through a few iterations of this experiment.
 
-First Iteration
----------------
+Iteration 01
+------------
 
 The first was where the main thread "controlled" the worker thread by sending messages to the worker when it was time (every 33ms) to generate the next set of physics calculations.
 
-The code is available for browsing: https://github.com/kirbysayshi/multithreaded-game-example/tree/first-iteration.
+The code is available for browsing: https://github.com/kirbysayshi/multithreaded-game-example/tree/iteration-01.
 
 It looked like this:
 
@@ -211,10 +211,12 @@ This first iteration also had an entity split between its "lightweight" [data re
 [data representation]: https://github.com/kirbysayshi/multithreaded-game-example/blob/01189621c72ef3ad43106d2783cb2cee04cc3fc4/lib/boiddata.js
 [physics-enabled representation]: https://github.com/kirbysayshi/multithreaded-game-example/blob/01189621c72ef3ad43106d2783cb2cee04cc3fc4/lib/boid.js
 
-Second Iteration
-----------------
+Iteration 02
+------------
 
-This is the current iteration, described above. In contrast to the first iteration, this one allows the worker to drive the simulation, only emitting state changes when the next simulation step is finished, and decouples rendering from the simulation itself.
+This is the [current iteration][], described above. In contrast to the first iteration, this one allows the worker to drive the simulation, only emitting state changes when the next simulation step is finished, and decouples rendering from the simulation itself.
+
+[current iteration]: https://github.com/kirbysayshi/multithreaded-game-example/tree/iteration-01
 
 Future Iteration
 ----------------
