@@ -1,5 +1,7 @@
 /*
-
+This was originally a small presentation I gave to a group of coworkers
+on this experiment. It may help to explain things until different components
+are more detailed.
 
 
 
@@ -1216,7 +1218,7 @@ Snapshot A                                  Snapshot B
 
 
               Rendering is here
-Main Thread   | (B time + ratio * 30ms)
+Main Thread   | (A time + ratio*30ms)
 Snapshot A    |                             Snapshot B
 --|-----------|---------|---------------------|----------------------------
 
