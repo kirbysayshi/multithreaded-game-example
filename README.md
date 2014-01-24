@@ -8,7 +8,7 @@ This is an experiment to see how practical running parts of typical game logic (
 
 On my 2010 Macbook Pro, the single threaded renders like a slide show while the multi threaded renders at 60fps.
 
-Single Threded:
+Single Threaded:
 ![single threaded](images/iteration-2-single.png)
 
 Multi Threaded:
