@@ -1,12 +1,12 @@
 Multithreaded Game Engine Experiment
 ====================================
 
-This is simply an experiment to see how practical running parts of typical game logic (physics) in a web worker can be. This project is in progress, but currently hosts two demos that share nearly the exact same code:
+This is an experiment to see how practical running parts of typical game logic (physics) in a web worker can be. This project is in progress, but currently hosts two demos that share nearly the exact same code:
 
-http://kirbysayshi.github.com/multithreaded-game-example/index-single.html
-http://kirbysayshi.github.com/multithreaded-game-example/index-multi.html
+* http://kirbysayshi.github.com/multithreaded-game-example/index-single.html
+* http://kirbysayshi.github.com/multithreaded-game-example/index-multi.html
 
-Aside from separate entry files ([single.js][single.js] and [multi.js][multi.js], respectively), they share the exact same library code (located in [lib][lib]). single runs on the main thread, while multi spawns a web worker to calculate physics and entity updates.
+Aside from separate entry files ([single.js](single.js) and [multi.js](multi.js), respectively), they share the exact same library code (located in [lib](lib)). single runs on the main thread, while multi spawns a web worker to calculate physics and entity updates.
 
 Please note: the point of this experiment is not to create the fastest physics simulation or rendering engine. Thus physics are definitely unoptimized, and rendering uses simple 2D canvas apis. These are both known, purposeful bottlenecks. They provide a common ground to test out the overhead (cpu, memory, and GC) of the "multithreaded machinery".
 
@@ -35,7 +35,20 @@ There are a few main components that power these demos, aside from the base plat
 Interpolated Rendering
 ----------------------
 
-The primary thread renders at 60 frames per second (e.g. every 16ms), while the web worker renders at 30 ticks per second (e.g. every 33ms). Therefore, the most recent and prior states emitted from the web worker are stored in the main thread, and time is interpolated between these two states when rendering. This allows for smooth movement with fewer physics updates. For more information, visit [Interpolated Physics Rendering][]. This technique also decouples rendering from physics updating, making even single threaded applications smoother and more resilient across hardware.
+The primary thread renders at 60 frames per second (e.g. every 16ms), while the web worker renders at 30 ticks per second (e.g. every 33ms). Therefore, the most recent and prior states emitted from the web worker are stored in the main thread, and time is interpolated between these two states when rendering. This allows for smooth movement with fewer physics updates. For more information, visit [Interpolated Physics Rendering][]. This technique also decouples rendering from physics updating, making even single threaded applications more resilient across hardware.
+
+
+                                                              Worker is here
+    Worker Time                                               | (0 + ratio*30ms)
+    -30ms                 -16ms                   0           |
+    --|---------------------|---------------------|-----------|---------
+    Snapshot A                                  Snapshot B
+    
+    
+                  Rendering is here
+    Main Thread   | (A time + ratio*30ms)
+    Snapshot A    |                             Snapshot B
+    --|-----------|---------|---------------------|----------------------------
 
 [Interpolated Physics Rendering]: http://kirbysayshi.com/2013/09/24/interpolated-physics-rendering.html
 
@@ -44,10 +57,35 @@ A Single Definition for an Entity
 
 Web Workers often necessitate a split of logic: visual things go into one file, and then non-visual things go into a file to be included by the worker. This is tricky and makes code harder to follow. Instead, entities are defined by one file, and included by both the worker and main thread. Then certain methods are only called within each context. For example `draw` would only be called within the main thread, while `update` would be called in the web worker.
 
-This also means that the game world and state is effectively duplicated between the web worker and the main thread. While this increases memory consumption, the goal of this experiment is to prove that the CPU gains (more effective time) outweigh the memory expansion.
+This also means that the game world and state is effectively duplicated between the web worker and the main thread. While this increases memory consumption, the goal of this experiment is to prove that the CPU gains (more effective time) outweigh.
 
-A Standard Protocol for Communication
--------------------------------------
+A Very Simple Entity System
+---------------------------
+
+Otherwise known as a factory or record system. The idea is that given a string id, an entity should either be returned, or constructed and returned. It maintains an internal map of constructed entities. In this experiment, the system is also responsible for [creating the ids](lib/boidmanager.js) itself.
+
+    // Instead of:
+    var boid = new Boid(x, y, radius);
+    
+    // Do this once...
+    var boidman = new BoidManager;
+    
+    // And then make a new boid:
+    var x = 10;
+    var y = 10;
+    var radius = 2;
+    var boid = boidman.getinate(null, [x, y, radius]);
+    console.log(boid.id);
+    // => "boid_1"
+    
+    // And then somewhere else in your code...
+    var boid = boidman.getinate("boid_1");
+    console.log(boid.x);
+    // => 10
+
+
+A Standard Protocol for Communication (Snapshots)
+-------------------------------------------------
 
 If an entity needs to be in both the main thread and worker thread at once, it is expected that it will conform to two constraints:
 
@@ -66,7 +104,7 @@ function Something() {
 }
 ```
 
-It is expected that those properties will be read and written to when writing and reading a snapshot, respectively:
+It is expected that those properties will be read and written to when writing and reading a snapshot respectively:
 
 ```js
 Something.prototype.readFromSnapshot(snapshot) {
@@ -101,27 +139,27 @@ Great inspiration for the current conventions of this engine came from reading a
 
 Here are most of the articles I've read while creating this experiment:
 
-* Age of Empires
-  > http://www.gamasutra.com/view/feature/3094/
+* Age of Empires Networking challenges on a dial up modem
+  * http://www.gamasutra.com/view/feature/3094/
 
-* X-Wing vs TIE Fighter networking
-  > http://www.gamasutra.com/view/feature/3374/the_internet_sucks_or_what_i_.php
+* X-Wing vs TIE Fighter networking on dial up (4v4!)
+  * http://www.gamasutra.com/view/feature/3374/the_internet_sucks_or_what_i_.php
 
 * Several articles from Fabien Sanglard about id Tech
-  > http://fabiensanglard.net/quake3/network.php
-  > http://fabiensanglard.net/doom3_documentation/The-DOOM-III-Network-Architecture.pdf
-  > http://fabiensanglard.net/doomIphone/index.php
-  > http://fabiensanglard.net/doom3_documentation/DOOM-3-BFG-Technical-Note.pdf
+  * http://fabiensanglard.net/quake3/network.php
+  * http://fabiensanglard.net/doom3_documentation/The-DOOM-III-Network-Architecture.pdf
+  * http://fabiensanglard.net/doomIphone/index.php
+  * http://fabiensanglard.net/doom3_documentation/DOOM-3-BFG-Technical-Note.pdf
 
 * id Tech 5 Technical challenges paper
-  > http://s09.idav.ucdavis.edu/talks/05-JP_id_Tech_5_Challenges.pdf
+  * http://s09.idav.ucdavis.edu/talks/05-JP_id_Tech_5_Challenges.pdf
 
 * John Carmack's .plan archive from 1998, discussing input journaling
-  > http://fd.fabiensanglard.net/doom3/pdfs/johnc-plan_1998.pdf#page56
+  * http://fd.fabiensanglard.net/doom3/pdfs/johnc-plan_1998.pdf#page56
 
 * Bugs from Chromium discussing Web Workers' lack of hi-res time and semantics
-  > http://code.google.com/p/chromium/issues/detail?id=85686
-  > http://code.google.com/p/chromium/issues/detail?id=169318
+  * http://code.google.com/p/chromium/issues/detail?id=85686
+  * http://code.google.com/p/chromium/issues/detail?id=169318
 
 It turns out that a client/server model maps fairly well to the web, even when not implementing multiplayer or servers in the web sense!
 
@@ -197,10 +235,10 @@ It looked like this:
 
 Terms:
 
-> rAF: requestAnimationFrame
-> ssi: StepStateInterpolator. Given a true elapsed time since the last, it called a single function every time (graphics) and a second function only as often as needed (physics). For more information, see [Interpolated Physics Rendering][].
-> server: The worker code, not a remote server.
-> msgqueue: An attempt to visualize the "stack" of `postMessage`(s) waiting to be processed by either client or "server".
+* rAF: requestAnimationFrame
+* ssi: StepStateInterpolator. Given a true elapsed time since the last, it called a single function every time (graphics) and a second function only as often as needed (physics). For more information, see [Interpolated Physics Rendering][].
+* server: The worker code, not a remote server.
+* msgqueue: An attempt to visualize the "stack" of `postMessage`(s) waiting to be processed by either client or "server".
 
 This caused huge jitter artifacts from needing to wait for the message roundtrip from the client to server to client. Oftentimes, the boid updates would arrive before the interpolation message would arrive, causing a really gross jitter.
 
