@@ -6,6 +6,11 @@ This is an experiment to see how practical running parts of typical game logic (
 * http://kirbysayshi.github.com/multithreaded-game-example/index-single.html
 * http://kirbysayshi.github.com/multithreaded-game-example/index-multi.html
 
+On my 2010 Macbook Pro, the single threaded renders like a slide show while the multi threaded renders at 60fps:
+
+![single threaded](images/iteration-2-single.png)
+![multi threaded](images/iteration-2-multi.png)
+
 Aside from separate entry files ([single.js](single.js) and [multi.js](multi.js), respectively), they share the exact same library code (located in [lib](lib)). single runs on the main thread, while multi spawns a web worker to calculate physics and entity updates.
 
 Please note: the point of this experiment is not to create the fastest physics simulation or rendering engine. Thus physics are definitely unoptimized, and rendering uses simple 2D canvas apis. These are both known, purposeful bottlenecks. They provide a common ground to test out the overhead (cpu, memory, and GC) of the "multithreaded machinery".
