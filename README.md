@@ -4,8 +4,8 @@ Thread Communication
 --------------------
 
 
-Current Architecture (Single)
------------------------------
+Original Architecture (Single)
+------------------------------
 
 |             Client             |           msgqueue         |          Server          |
 ------------------------------------------------------------------------------------------
@@ -19,7 +19,7 @@ Current Architecture (Single)
 | > "boid updates" => updateAll()|                            |                          |
 |                                |                            |                          |
 
-
+This caused huge jitter artifacts from needing to wait for the message roundtrip from the client to server to client. Oftentimes, the boid updates would arrive before the interpolation message would arrive, causing a really gross jitter.
 
 
 
@@ -75,10 +75,15 @@ Future Options:
 Implement the canvas api to operate on a raw array or ImageData, which can then be directly transported to the main thread for putImageData.
 
 
+It's Easy to DOS Your Render Thread
+-----------------------------------
 
+While transitioning to above-ish, I discovered that it's easy to overwhelm the rendering (main) thread by having the working constantly emit messages. This was especially true in Firefox. I was relying on the "server" to emit a `tick` message that contained the newest interpolation value for rendering, but it was completely destroying FF's (and sometimes Chrome's, depending on hardware) ability to process the main thread in time.
 
+TODOS:
+======
 
-
+- How should this sim handle physics steps taking too long? Right now they are still processed but build up.
 
 
 Resources
@@ -96,6 +101,9 @@ http://s09.idav.ucdavis.edu/talks/05-JP_id_Tech_5_Challenges.pdf
 http://fd.fabiensanglard.net/doom3/pdfs/johnc-plan_1998.pdf#page56
 
 http://code.google.com/p/chromium/issues/detail?id=85686
+http://code.google.com/p/chromium/issues/detail?id=169318 (high resolution timers in workers)
+
+FF Worker RunLoop: https://github.com/mozilla/gecko-dev/blob/e11313960c3b17b4b846af34288722795ec2f260/dom/workers/WorkerPrivate.cpp#L3968
 
 Things I created while creating this:
 
