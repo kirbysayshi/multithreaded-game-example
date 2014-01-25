@@ -23,7 +23,7 @@ Running It Yourself
 
 - Clone this repo
 - `npm install`
-- `npm bundle` (or `npm bundle-debug` for source maps)
+- `npm run bundle` (or `npm run bundle-debug` for source maps)
 - Load up index-single.html or index-multi.html in a browser.
 
 For a quicker iteration time, use [beefy][]:
@@ -195,7 +195,7 @@ This next revision adds in a nested object to compare:
 It's Easy to DOS Your Render Thread
 -----------------------------------
 
-While transitioning between architecture iterations 1 and 2 (discussed below) I discovered that it's easy to overwhelm the rendering (main) thread by having the working constantly emit messages. This was especially true in Firefox. I was relying on the "server" to emit a `tick` message that contained the newest interpolation value for rendering, but it was completely destroying FF's (and sometimes Chrome's, depending on hardware) ability to process the main thread in time.
+While transitioning between architecture iterations 1 and 2 (discussed below) I discovered that it's easy to overwhelm the rendering (main) thread by having the worker constantly emit messages. This was especially true in Firefox. I was relying on the "server" to emit a `tick` message that contained the newest interpolation value for rendering, but it was completely destroying FF's (and sometimes Chrome's, depending on hardware) ability to process the main thread in time.
 
 For future reference, that looks like this:
 
