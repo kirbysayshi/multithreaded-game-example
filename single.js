@@ -2,8 +2,10 @@
 console.log('running in SINGLE THREADED MODE');
 
 var scihalt = require('science-halt');
+var kb = require('kb-controls');
 
 var config = require('./lib/config');
+var ctl = kb(config.controlMap);
 
 var cvs = document.querySelector('#stage')
   , ctx = cvs.getContext('2d')
@@ -18,6 +20,10 @@ var worker = require('./lib/worker')();
 var BoidManager = require('./lib/boidmanager');
 var boidman = new BoidManager;
 var lastSnapshotReceivedAt = performance.now();
+
+var input = require('./lib/input')(function(data) {
+  window.postMessage(data, '*');
+});
 
 window.addEventListener('message', function(ev) {
 
@@ -50,6 +56,7 @@ function graphics(dt) {
   for (var i = 0; i < boids.length; i++) {
     boids[i].draw(ctx, ratio);
   }
+  input.poll();
   rstats('frame').end();
   rstats().update();
 }

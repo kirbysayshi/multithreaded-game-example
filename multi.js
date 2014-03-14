@@ -20,6 +20,8 @@ var BoidManager = require('./lib/boidmanager');
 var boidman = new BoidManager;
 var lastSnapshotReceivedAt = performance.now();
 
+var input = require('./lib/input')(worker.postMessage.bind(worker));
+
 worker.addEventListener('message', function(ev) {
 
   // A full step contains snapshots.
@@ -51,6 +53,7 @@ function graphics(dt) {
   for (var i = 0; i < boids.length; i++) {
     boids[i].draw(ctx, ratio);
   }
+  input.poll();
   rstats('frame').end();
   rstats().update();
 }
