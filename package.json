@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "beefy single.js:bundle-single.js multi.js:bundle-multi.js 1234",
     "bundle": "browserify multi.js > bundle-multi.js && browserify single.js > bundle-single.js",
     "bundle-debug": "browserify multi.js --debug > bundle-multi.js && browserify single.js --debug > bundle-single.js"
   },
@@ -15,5 +16,8 @@
     "webworkify": "~0.1.0",
     "science-halt": "~0.2.0",
     "alea": "0.0.9"
+  },
+  "devDependencies": {
+    "beefy": "^1.1.0"
   }
 }
