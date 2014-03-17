@@ -22,13 +22,19 @@ var lastSnapshotReceivedAt = performance.now();
 
 var mm = require('./lib/messagemanager')();
 worker.addEventListener('message', function(ev) {
+  rstats('msgs: main-recv').tick();
+  rstats('msgs: main-queued').set(rstats('msgs: main-queued').value() + 1);
+  rstats('msg: phys steps').set(ev.data.steps);
   mm._queue(ev.data);
+  rstats().update();
 });
 mm._write = function(msg) {
   worker.postMessage(msg);
 }
 
 function message(msg) {
+
+  rstats('msgs: main-queued').set(rstats('msgs: main-queued').value() - 1);
 
   // A full step contains snapshots.
   if (msg.type === 'step') {
@@ -50,10 +56,10 @@ function message(msg) {
 function graphics(dt) {
   var now = performance.now();
 
-  rstats('messages-read').start();
+  rstats('msgs: read-time').start();
   var total = mm.read(message);
-  rstats('messages-read').end();
-  rstats('message: main-recv').set(total);
+  rstats('msgs: read-time').end();
+  rstats('msgs: main-processed').set(total);
 
   rstats('frame').start();
   rstats('FPS').frame();

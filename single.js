@@ -20,8 +20,15 @@ var boidman = new BoidManager;
 var lastSnapshotReceivedAt = performance.now();
 
 var mm = require('./lib/messagemanager')();
+mm._write = function(msg) {
+  rstats('msgs: main-recv').tick();
+  rstats('msgs: main-queued').set(rstats('msgs: main-queued').value() + 1);
+  this._queue(msg);
+}
 
 function message(msg) {
+
+  rstats('msgs: main-queued').set(rstats('msgs: main-queued').value() - 1);
 
   // A full step contains snapshots.
   if (msg.type === 'step') {
@@ -42,10 +49,10 @@ function message(msg) {
 function graphics(dt) {
   var now = performance.now();
 
-  rstats('messages-read').start();
+  rstats('msgs: read-time').start();
   var total = mm.read(message);
-  rstats('messages-read').end();
-  rstats('message: main-recv').set(total);
+  rstats('msgs: read-time').end();
+  rstats('msgs: main-processed').set(total);
 
   rstats('frame').start();
   rstats('FPS').frame();
