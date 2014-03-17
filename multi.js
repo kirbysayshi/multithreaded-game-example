@@ -20,12 +20,20 @@ var BoidManager = require('./lib/boidmanager');
 var boidman = new BoidManager;
 var lastSnapshotReceivedAt = performance.now();
 
+var mm = require('./lib/messagemanager')();
 worker.addEventListener('message', function(ev) {
+  mm._queue(ev.data);
+});
+mm._write = function(msg) {
+  worker.postMessage(msg);
+}
+
+function message(msg) {
 
   // A full step contains snapshots.
-  if (ev.data.type === 'step') {
-    for (var i = 0; i < ev.data.snapshots.length; i++) {
-      var snapshot = ev.data.snapshots[i];
+  if (msg.type === 'step') {
+    for (var i = 0; i < msg.snapshots.length; i++) {
+      var snapshot = msg.snapshots[i];
       var boid = boidman.getinate(snapshot.id);
       boid.readFromSnapshot(snapshot);
     }
@@ -33,15 +41,20 @@ worker.addEventListener('message', function(ev) {
     // TODO: there has to be a better way to do this?
     lastSnapshotReceivedAt = performance.now();
 
-    rstats('phys').set(ev.data.endTime - ev.data.startTime);
+    rstats('phys').set(msg.endTime - msg.startTime);
     rstats().update();
     return;
   }
-
-});
+}
 
 function graphics(dt) {
   var now = performance.now();
+
+  rstats('messages-read').start();
+  var total = mm.read(message);
+  rstats('messages-read').end();
+  rstats('message: main-recv').set(total);
+
   rstats('frame').start();
   rstats('FPS').frame();
   rstats('rAF').tick();
@@ -61,5 +74,5 @@ repeaterCtl.start();
 
 scihalt(function() {
   repeaterCtl.stop();
-  worker.postMessage({ type: 'HALT' });
+  mm.write({ type: 'HALT' });
 })
