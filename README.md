@@ -29,9 +29,8 @@ Running It Yourself
 For a quicker iteration time, use [beefy][]:
 
 - `npm install -g beefy`
-- `beefy single.js:bundle-single.js 1234` (for index-single.html)
-- `beefy multi.js:bundle-multi.js 1234` (for index-multi.html)
-- Visit http://localhost:1234/index-multi.html in your browser.
+- `npm start`
+- Visit http://localhost:1234/index-multi.html or http://localhost:1234/index-single.html in your browser.
 
 [beefy]: https://github.com/chrisdickinson/beefy
 
