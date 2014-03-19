@@ -23,7 +23,6 @@ var mm = require('./lib/messagemanager')();
 mm._write = function(msg) {
   this._queue(msg);
   rstats('msgs: main-recv').flow(1);
-  rstats('msgs: main-queued').set(mm.length());
   rstats('msgs: latency').set(Date.now() - msg.endTime);
 }
 
@@ -42,7 +41,7 @@ function message(msg) {
 
     rstats('phys steps').set(msg.steps);
     rstats('phys').set(msg.computedTime);
-    return;
+    return true; // mark message as received
   }
 }
 
@@ -68,6 +67,7 @@ function graph() {
   rstats('raf').tick();
   rstats('FPS').frame();
   rstats('msgs: main-recv').flow(0);
+  rstats('msgs: main-queued').set(mm.length());
   rstats().update();
 }
 
