@@ -23,13 +23,13 @@ var mm = require('./lib/messagemanager')();
 mm._write = function(msg) {
   this._queue(msg);
   rstats('msgs: main-recv').flow(1);
-  rstats('msgs: latency').set(Date.now() - msg.endTime);
+  rstats('msgs: latency').set(Date.now() - msg.postedAt);
 }
 
 function message(msg) {
 
   // A full step contains snapshots.
-  if (msg.type === 'step') {
+  if (msg.type === 'physics:step') {
     for (var i = 0; i < msg.snapshots.length; i++) {
       var snapshot = msg.snapshots[i];
       var boid = boidman.getinate(snapshot.id);
@@ -39,9 +39,14 @@ function message(msg) {
     // TODO: there has to be a better way to do this?
     lastSnapshotReceivedAt = performance.now();
 
-    rstats('phys: steps').set(msg.steps);
     rstats('phys: time').set(msg.computedTime);
     return true; // mark message as received
+  }
+
+  if (msg.type === 'physics:timing') {
+    rstats('phys: steps').set(msg.steps);
+    rstats('phys: steps-computed-time').set(msg.computedTime);
+    return true;
   }
 }
 
