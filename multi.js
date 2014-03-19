@@ -22,19 +22,16 @@ var lastSnapshotReceivedAt = performance.now();
 
 var mm = require('./lib/messagemanager')();
 worker.addEventListener('message', function(ev) {
-  rstats('msgs: main-recv').tick();
-  rstats('msgs: main-queued').set(rstats('msgs: main-queued').value() + 1);
-  rstats('msg: phys steps').set(ev.data.steps);
   mm._queue(ev.data);
-  rstats().update();
+  rstats('msgs: main-recv').flow(1);
+  rstats('msgs: main-queued').set(mm.length());
+  rstats('msgs: latency').set(Date.now() - ev.data.endTime);
 });
 mm._write = function(msg) {
   worker.postMessage(msg);
 }
 
 function message(msg) {
-
-  rstats('msgs: main-queued').set(rstats('msgs: main-queued').value() - 1);
 
   // A full step contains snapshots.
   if (msg.type === 'step') {
@@ -47,8 +44,8 @@ function message(msg) {
     // TODO: there has to be a better way to do this?
     lastSnapshotReceivedAt = performance.now();
 
-    rstats('phys').set(msg.endTime - msg.startTime);
-    rstats().update();
+    rstats('phys steps').set(msg.steps);
+    rstats('phys').set(msg.computedTime);
     return;
   }
 }
@@ -62,8 +59,6 @@ function graphics(dt) {
   rstats('msgs: main-processed').set(total);
 
   rstats('frame').start();
-  rstats('FPS').frame();
-  rstats('rAF').tick();
   ctx.clearRect(0, 0, cvs.width, cvs.height);
   var ratio = (now - lastSnapshotReceivedAt) / 1000 / config.PHYSICS_HZ;
   var boids = boidman.all();
@@ -71,14 +66,29 @@ function graphics(dt) {
     boids[i].draw(ctx, ratio);
   }
   rstats('frame').end();
+}
+
+function graph() {
+  rstats('raf').tick();
+  rstats('FPS').frame();
+  rstats('msgs: main-recv').flow(0);
   rstats().update();
 }
 
 // Call `graphics` as often as possible using `requestAnimationFrame`.
-var repeaterCtl = repeater(graphics, requestAnimationFrame);
-repeaterCtl.start();
+var gfxCtl = repeater(graphics, requestAnimationFrame);
+gfxCtl.start();
 
 scihalt(function() {
-  repeaterCtl.stop();
+  gfxCtl.stop();
   mm.write({ type: 'HALT' });
-})
+});
+
+var graphCtl = repeater(graph, requestAnimationFrame);
+graphCtl.start();
+
+scihalt(function() {
+  graphCtl.stop();
+}, 'GRAPH!', 81);
+
+
