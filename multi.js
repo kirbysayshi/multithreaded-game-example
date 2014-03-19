@@ -43,8 +43,8 @@ function message(msg) {
     // TODO: there has to be a better way to do this?
     lastSnapshotReceivedAt = performance.now();
 
-    rstats('phys steps').set(msg.steps);
-    rstats('phys').set(msg.computedTime);
+    rstats('phys: steps').set(msg.steps);
+    rstats('phys: time').set(msg.computedTime);
     return true; // mark message as received
   }
 }
@@ -57,14 +57,14 @@ function graphics(dt) {
   rstats('msgs: read-time').end();
   rstats('msgs: main-processed').set(total);
 
-  rstats('frame').start();
+  rstats('render').start();
   ctx.clearRect(0, 0, cvs.width, cvs.height);
   var ratio = (now - lastSnapshotReceivedAt) / 1000 / config.PHYSICS_HZ;
   var boids = boidman.all();
   for (var i = 0; i < boids.length; i++) {
     boids[i].draw(ctx, ratio);
   }
-  rstats('frame').end();
+  rstats('render').end();
 }
 
 function graph() {
