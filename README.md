@@ -147,6 +147,10 @@ Great inspiration for the current conventions of this engine came from reading a
 
 Here are most of the articles I've read while creating this experiment:
 
+* Prior Art
+  * http://granular.cs.umu.se/browserphysics/?p=297
+  * http://granular.cs.umu.se/browserphysics/?p=2125
+
 * Age of Empires Networking challenges on a dial up modem
   * http://www.gamasutra.com/view/feature/3094/
 
