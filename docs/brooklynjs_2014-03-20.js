@@ -17,6 +17,7 @@
 Siphoning energy out of a pocket universe...
 In JS.
 
+Drew Petersen
 @KirbySaysHi
 
 
@@ -29,27 +30,6 @@ In JS.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Let's talk about games.
 
 
 
@@ -158,31 +138,6 @@ This means 16ms per frame!
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Games are on a tight schedule. They:
-
-- are advanced one step at a time
-- determine how much time has passed since the last step
-- do stuff to make cool things happen on screen
-- wait for the next step
 
 
 
@@ -725,39 +680,6 @@ A few key pieces:
 
 
 
-
-
-
-
-Entity System (e.g a system to manage "things")
-===============================================
-
-To make a new thing, you use a string / numeric id:
-*/
-
-// Instead of:
-var boid = new Boid(x, y, radius);
-
-
-// Do this once...
-var boidman = new BoidManager;
-
-
-// And then make a new boid:
-var boid = boidman.getinate(null, [x, y, radius]);
-console.log(boid.id);
-// => "boid_1"
-console.log(boid.x);
-// => 10
-
-
-// And then somewhere else in your code...
-var boid = boidman.getinate('boid_1');
-console.log(boid.x);
-// => 10
-
-/*
-Summary: A way to grab an existing instance of an object, quickly.
 
 
 
