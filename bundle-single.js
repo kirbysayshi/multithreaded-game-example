@@ -865,27 +865,27 @@ scihalt(function() {
 // performance.now() polyfill from https://gist.github.com/paulirish/5438650
 
 (function(){
- 
+
   // prepare base perf object
   if (typeof window.performance === 'undefined') {
       window.performance = {};
   }
- 
+
   if (!window.performance.now){
-    
+
     var nowOffset = Date.now();
- 
+
     if (performance.timing && performance.timing.navigationStart){
       nowOffset = performance.timing.navigationStart
     }
- 
- 
+
+
     window.performance.now = function now(){
       return Date.now() - nowOffset;
     }
- 
+
   }
- 
+
 })();
 
 module.exports = function rStats( settings ) {
@@ -899,17 +899,17 @@ module.exports = function rStats( settings ) {
         element.rel = 'stylesheet';
         element.type = 'text/css';
         document.getElementsByTagName('head')[0].appendChild(element)
-    
+
     }
 
     var _settings = settings || {},
         _colours = [ '#850700', '#c74900', '#fcb300', '#284280', '#4c7c0c' ];
-    
+
     importCSS( 'http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,300' );
-    importCSS( ( _settings.CSSPath?_settings.CSSPath:'' ) + 'rStats.css' );
+    importCSS( ( _settings.CSSPath?_settings.CSSPath:'' ) + 'rstats.css' );
 
     if( !_settings.values ) _settings.values = {};
-    
+
     function Graph( _dom, _id, _def ) {
 
         var _def = _def || {};
@@ -920,7 +920,7 @@ module.exports = function rStats( settings ) {
 
         var c = _def.color?_def.color:'#666666';
         var wc = _def.warningColor?_def.warningColor:'#b70000';
-        
+
         var _dotCanvas = document.createElement( 'canvas' ),
             _dotCtx = _dotCanvas.getContext( '2d' );
         _dotCanvas.width = 1;
@@ -953,7 +953,7 @@ module.exports = function rStats( settings ) {
             _canvas.height = _elHeight;
             _canvas.style.width = _canvas.width + 'px';
             _canvas.style.height = _canvas.height + 'px';
-            _canvas.className = 'rs-canvas'; 
+            _canvas.className = 'rs-canvas';
             _dom.appendChild( _canvas );
 
             _ctx.fillStyle = '#444444';
@@ -994,7 +994,7 @@ module.exports = function rStats( settings ) {
             _canvas.height = _elHeight * _num;
             _canvas.style.width = _canvas.width + 'px';
             _canvas.style.height = _canvas.height + 'px';
-            _canvas.className = 'rs-canvas'; 
+            _canvas.className = 'rs-canvas';
             _dom.appendChild( _canvas );
 
             _ctx.fillStyle = '#444444';
@@ -1039,13 +1039,13 @@ module.exports = function rStats( settings ) {
             _graph = new Graph( _dom, _id, _def );
 
         _dom.className = 'rs-counter-base';
-       
+
         _spanId.className = 'rs-counter-id'
         _spanId.textContent = ( _def && _def.caption )?_def.caption:_id;
 
         _spanValue.className = 'rs-counter-value';
         _spanValue.appendChild( _spanValueText );
-        
+
         _dom.appendChild( _spanId );
         _dom.appendChild( _spanValue );
         if( group ) group.div.appendChild( _dom );
@@ -1241,7 +1241,7 @@ module.exports = function rStats( settings ) {
                 div.className = 'rs-fraction';
                 var legend = document.createElement( 'div' );
                 legend.className = 'rs-legend';
-                
+
                 var h = 0;
                 for( var k in _settings.fractions[ j ].steps ) {
                     var p = document.createElement( 'p' );
@@ -1262,7 +1262,7 @@ module.exports = function rStats( settings ) {
     }
 
     function _update() {
-        
+
         for( var j in _settings.plugins ) {
             _settings.plugins[ j ].update();
         }
@@ -1308,4 +1308,5 @@ module.exports = function rStats( settings ) {
     }
 
 };
+
 },{}]},{},[13])
