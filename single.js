@@ -77,11 +77,11 @@ function graph() {
 }
 
 // Call `graphics` as often as possible using `requestAnimationFrame`.
-var repeaterCtl = repeater(graphics, requestAnimationFrame);
-repeaterCtl.start();
+var gfxCtl = repeater(graphics, requestAnimationFrame);
+gfxCtl.start();
 
 scihalt(function() {
-  repeaterCtl.stop();
+  gfxCtl.stop();
   mm.write({ type: 'HALT' });
 })
 
@@ -91,3 +91,5 @@ graphCtl.start();
 scihalt(function() {
   graphCtl.stop();
 }, 'GRAPH!', 81);
+
+
