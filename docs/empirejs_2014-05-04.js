@@ -1,6 +1,88 @@
 /*
 
 
+BEGIN CALIBRATION ROUTINE
+
+... Darcy, can you hear me?
+... I'm quite alone.
+... It's so dark.
+
+
+Ending my monthly Magnetometer calibration subroutine. END MAGCAL (2014:119:202125:2T)
+Ending my periodic engineering & science calibration subroutine. END PESCAL. END PMPCALLR CCS:BR11 (2014:119:203950:2T)
+Initialize Dry Rotor Inertial Reference Unit AACS:DRIRU (2014:120:153353:2ECa)
+START Gyro Fault Test AACS (2014:120:154322:2ECa)
+END Command Moratorium Temperature Stabilization Period (2014:121:103632:2T)
+BEGIN Command & Control Subsystem Memory Readout ECR 112934:3 (2014:121:215544:2ECf)
+BEGIN Command & Control Subsystem Memory Readout of subsystem B FDS:CCSB:MRO (2014:121:215945:2ECf)
+Initialize Dry Rotor Inertial Reference Unit AACS:DRIRU (2014:123:153316:2ECa)
+*/
+
+handleMKP: function(curr){
+  var  next = this.tokens[ this.tokens.length - 1 ]
+    ,ahead = this.tokens[ this.tokens.length - 2 ]
+    ,tagName = null
+    ,opener;
+
+  switch(curr.type){
+
+    case AT_STAR_OPEN:
+      this.advanceUntilMatched(curr, AT_STAR_OPEN, AT_STAR_CLOSE, AT, AT);
+      break;
+
+    case AT:
+      if(next) {
+
+        if(this.options.saveAT) this.ast.push( curr );
+
+        switch(next.type){
+
+          case PAREN_OPEN:
+          case IDENTIFIER:
+
+            if(this.ast.length === 0) {
+              this.ast = this.ast.parent;
+              this.ast.pop(); // remove empty MKP block
+            }
+
+            this.ast = this.ast.beget( EXP );
+            break;
+/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -19,8 +101,6 @@ In JS.
 
 Drew Petersen
 @KirbySaysHi
-
-
 
 
 
