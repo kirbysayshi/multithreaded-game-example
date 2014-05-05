@@ -16,6 +16,7 @@ END Command Moratorium Temperature Stabilization Period (2014:121:103632:2T)
 BEGIN Command & Control Subsystem Memory Readout ECR 112934:3 (2014:121:215544:2ECf)
 BEGIN Command & Control Subsystem Memory Readout of subsystem B FDS:CCSB:MRO (2014:121:215945:2ECf)
 Initialize Dry Rotor Inertial Reference Unit AACS:DRIRU (2014:123:153316:2ECa)
+    88   "Y88888P"   888   "Y88888P"    "Y88888P"    "Y88888P"   88      88      88  `"YbbdP"'
 */
 
 handleMKP: function(curr){
@@ -31,22 +32,6 @@ handleMKP: function(curr){
       break;
 
     case AT:
-      if(next) {
-
-        if(this.options.saveAT) this.ast.push( curr );
-
-        switch(next.type){
-
-          case PAREN_OPEN:
-          case IDENTIFIER:
-
-            if(this.ast.length === 0) {
-              this.ast = this.ast.parent;
-              this.ast.pop(); // remove empty MKP block
-            }
-
-            this.ast = this.ast.beget( EXP );
-            break;
 /*
 
 
