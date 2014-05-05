@@ -76,7 +76,7 @@ module.exports = function rStats( settings ) {
         _alarmCanvas.height = 2 * _elHeight;
         _alarmCtx.fillStyle = '#444444';
         _alarmCtx.fillRect( 0, 0, 1, 2 * _elHeight );
-        _alarmCtx.fillStyle = '#b70000';
+        _alarmCtx.fillStyle = wc; //'#b70000';
         _alarmCtx.fillRect( 0, _elHeight, 1, _elHeight );
         _alarmCtx.globalAlpha = .5;
         _alarmCtx.fillStyle = '#ffffff';
@@ -222,7 +222,7 @@ module.exports = function rStats( settings ) {
             _spanValueText.nodeValue = Math.round( v * 100 ) / 100;
             var a = ( _def && ( ( _def.below && _value < _def.below ) || ( _def.over && _value > _def.over ) ) );
             _graph.draw( _value, a );
-            _dom.style.color = a?'#b70000':'#ffffff';
+            _dom.style.color = a? (_def.warningColor || '#b70000') : '#ffffff';
         }
 
         function _frame() {
